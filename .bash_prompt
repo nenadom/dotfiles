@@ -3,7 +3,7 @@
 # Shell prompt based on the Solarized Dark theme.
 # Screenshot: http://i.imgur.com/EkEtphC.png
 # Heavily inspired by @necolas’s prompt: https://github.com/necolas/dotfiles
-# iTerm → Profiles → Text → use 13pt Monaco with 1.1 vertical spacing.
+# iTerm → Profiles → Text → use 14pt Operator Mono with 1.1 vertical spacing.
 
 if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
 	export TERM='gnome-256color';
@@ -26,31 +26,6 @@ prompt_git() {
 		git describe --all --exact-match HEAD 2> /dev/null || \
 		git rev-parse --short HEAD 2> /dev/null || \
 		echo '(unknown)')";
-
-	# Early exit for Chromium & Blink repo, as the dirty check takes too long.
-	# Thanks, @paulirish!
-	# https://github.com/paulirish/dotfiles/blob/dd33151f/.bash_prompt#L110-L123
-	repoUrl="$(git config --get remote.origin.url)";
-	if grep -q 'chromium/src.git' <<< "${repoUrl}"; then
-		s+='*';
-	else
-		# Check for uncommitted changes in the index.
-		if ! $(git diff --quiet --ignore-submodules --cached); then
-			s+='+';
-		fi;
-		# Check for unstaged changes.
-		if ! $(git diff-files --quiet --ignore-submodules --); then
-			s+='!';
-		fi;
-		# Check for untracked files.
-		if [ -n "$(git ls-files --others --exclude-standard)" ]; then
-			s+='?';
-		fi;
-		# Check for stashed files.
-		if $(git rev-parse --verify refs/stash &>/dev/null); then
-			s+='$';
-		fi;
-	fi;
 
 	[ -n "${s}" ] && s=" [${s}]";
 
